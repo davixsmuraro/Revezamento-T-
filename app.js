@@ -1,4 +1,3 @@
-javascript
 const calendarData = {
     year: 2025,
     months: [
@@ -18,11 +17,8 @@ const calendarData = {
     weekdays: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"]
 };
 
-// Dados em memória
-let dateNames = {};
-let dateColors = {};
-
-// Variáveis do modal
+let dateNames = JSON.parse(localStorage.getItem('dateNames')) || {};
+let dateColors = JSON.parse(localStorage.getItem('dateColors')) || {};
 let currentSelectedDate = null;
 
 // Elementos
@@ -36,7 +32,7 @@ const btnSave = document.getElementById('btn-save');
 const btnCancel = document.getElementById('btn-cancel');
 const btnClear = document.getElementById('btn-clear');
 
-// Renderização do calendário
+// Função para renderizar o calendário
 function renderCalendar() {
     const grid = document.getElementById('calendar-grid');
     grid.innerHTML = '';
@@ -60,10 +56,9 @@ function renderCalendar() {
         });
         monthDiv.appendChild(weekRow);
 
-        // Dias
+        // Dias do mês
         const daysRow = document.createElement('div');
         daysRow.className = 'days-row';
-        // Dias em branco no início
         const firstDay = new Date(calendarData.year, month.number - 1, 1).getDay();
         for (let i = 0; i < firstDay; i++) {
             const blankDiv = document.createElement('div');
@@ -74,26 +69,25 @@ function renderCalendar() {
             const dayDiv = document.createElement('div');
             dayDiv.className = 'day';
             dayDiv.dataset.date = dateStr;
+            dayDiv.innerText = day;
+            dayDiv.onclick = () => openModal(dateStr);
+
             if (dateNames[dateStr]) {
                 dayDiv.setAttribute('data-has-name', 'true');
-                dayDiv.innerText = day;
+                dayDiv.style.backgroundColor = dateColors[dateStr] || "#26C485";
+                dayDiv.style.color = "#fff";
                 const nameSpan = document.createElement('span');
                 nameSpan.className = 'day-name';
                 nameSpan.innerText = dateNames[dateStr];
                 dayDiv.appendChild(nameSpan);
-                dayDiv.style.backgroundColor = dateColors[dateStr] || "#26C485";
-                dayDiv.style.color = "#fff";
             } else {
-                dayDiv.innerText = day;
                 dayDiv.removeAttribute('data-has-name');
                 dayDiv.style.backgroundColor = "#fff";
                 dayDiv.style.color = "#21808d";
             }
-            dayDiv.onclick = () => openModal(dateStr);
             daysRow.appendChild(dayDiv);
         }
         monthDiv.appendChild(daysRow);
-
         grid.appendChild(monthDiv);
     });
 }
@@ -102,7 +96,6 @@ function formatDate(year, month, day) {
     return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
-// Modal
 function openModal(dateStr) {
     currentSelectedDate = dateStr;
     modal.classList.remove('hidden');
@@ -116,29 +109,37 @@ function closeModal() {
     currentSelectedDate = null;
 }
 
-btnCloseModal = () => closeModal();
-modalClose.onclick = btnCloseModal;
-modalOverlay.onclick = btnCloseModal;
-btnCancel.onclick = btnCloseModal;
+function persistData() {
+    localStorage.setItem('dateNames', JSON.stringify(dateNames));
+    localStorage.setItem('dateColors', JSON.stringify(dateColors));
+}
+
+modalClose.onclick = closeModal;
+modalOverlay.onclick = closeModal;
+btnCancel.onclick = closeModal;
 
 btnSave.onclick = () => {
     if (!currentSelectedDate) return;
     const nome = nameInput.value.trim();
-    const cor = colorInput.value;
+    // pega SEMPRE a cor atual do input de cor
+    const cor = colorInput.value && colorInput.value !== "#fff" ? colorInput.value : "#26C485";
     if (nome !== "") {
         dateNames[currentSelectedDate] = nome;
-        dateColors[currentSelectedDate] = cor || "#26C485";
+        dateColors[currentSelectedDate] = cor;
     } else {
         delete dateNames[currentSelectedDate];
         delete dateColors[currentSelectedDate];
     }
+    persistData();
     closeModal();
     renderCalendar();
 };
+
 btnClear.onclick = () => {
     if (!currentSelectedDate) return;
     delete dateNames[currentSelectedDate];
-    dateColors[currentSelectedDate] = "#fff";
+    delete dateColors[currentSelectedDate];
+    persistData();
     closeModal();
     renderCalendar();
 };
