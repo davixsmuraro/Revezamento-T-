@@ -1,18 +1,16 @@
-xml
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendário de Nomes 2025</title>
+    <title>Datas com Tê</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1>Calendário de Nomes 2025</h1>
-            <p class="subtitle">Clique em qualquer data para adicionar um nome e escolher cor</p>
+            <h1>Datas com Tê</h1>
+            <p class="subtitle">Clique em qualquer data para adicionar um nome</p>
         </header>
         <main class="calendar-grid" id="calendar-grid">
             <!-- Calendário gerado pelo JavaScript -->
@@ -31,8 +29,10 @@ xml
                         <input type="text" id="name-input" maxlength="50" placeholder="Digite o nome...">
                     </div>
                     <div class="form-group">
-                        <label for="color-input">Cor:</label>
-                        <input type="color" id="color-input" value="#26C485">
+                        <label>Cor:</label>
+                        <div id="color-options" class="color-options">
+                            <!-- Cores via JS -->
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
